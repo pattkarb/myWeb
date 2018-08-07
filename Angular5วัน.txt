@@ -1,0 +1,216 @@
+﻿ติดตั้ง cli
+npm i -g @angular/cli
+------------------------------------------------
+build project ใหม่
+ng new myWeb --routing 
+------------------------------------------------
+test project
+ng serve --port=8080
+------------------------------------------------
+เพิ่ม clarity design system ที่โปรเจค
+ng add @clr/angular
+ดูวิธีใช้ตาม website  https://vmware.github.io/clarity/
+------------------------------------------------
+สร้างโมดูลใหม่ ใน โปรเจค
+	ng g m login --routing --spec false 
+แล้วสร้าง คอมโพเน้นท์ในโมดูล
+	ng g c login/login --spec false
+------------------------------------------------
+comment ในแต่ละบรรทัด กด ctrl + /
+------------------------------------------------
+สร้าง routing ให้เข้าหน้า login ก่อน   
+	<router-outlet></router-outlet>
+
+	app.routing.module.ts
+		const routes: Routes = [
+  		   { path: '', redirectTo: 'login' , pathMatch:'full'}
+		];		
+	app.module.ts 
+	ต้อง import login module เข้ามา
+		 imports: [
+    		    BrowserModule,		
+    		    AppRoutingModule,
+    		    ClarityModule,
+    		    BrowserAnimationsModule,
+    		    LoginModule
+      		],......	
+	จะเพิ่ม import { LoginModule } from './login/login.module'; อัตโนมัติ
+	login-routing.module.ts
+		const routes: Routes = [
+  		  {path:'login', component:LoginComponent}
+		];			
+------------------------------------------------
+เพิ่มปลั๊กอิน ตัวช่วย
+	Angular v6 Snippets  ของ John Papa
+------------------------------------------------
+ตัวแปร
+	login.component.st
+		เอาไว้ข้างบน constructor() {}	
+		export class LoginComponent implements OnInit {
+  			username: string;   		<== ตัวแปร
+  			password: string;
+			type =[];  			<= array
+			userType = {id:1,name:'admin'}; 	<= object
+			userTypes = [
+			  {id: 1, name: 'admin', rights: ['access_po','access_inv',]},
+			  {id: 2, name: 'user', rights: ['access_po','access_inv',]}	 	
+			];
+			
+			constructor() { }
+
+  		ngOnInit() {
+  		}
+
+		}
+
+*ngFor   วนลูป For
+	<select id="login-auth-source-1">
+                  <option *ngFor="let type of userTypes" [value]="type.id">{{type.name}}</option>
+              </select>
+----------------------------------------------------------------------------
+Two Way Data Byding 
+	Import ตัว FormModule ก่อน
+		login.modules.ts
+			import { FormsModule } from '@angular/forms';		
+			
+			@NgModule({
+  			   imports: [
+		                    FormsModule,
+			     CommonModule,
+			     LoginRoutingModule
+  			   ],
+			  declarations: [LoginComponent]
+			})
+
+	<input [(ngModel)]="username" name="username" class="username" type="text" id="login_username" placeholder="Username">
+            	<input [(ngModel)]="password" name="password" class="password" type="password" id="login_password" placeholder="Password">
+----------------------
+event ต่าง ๆ 
+    	<button type="submit" (click)="doLogin()" ....>
+	login.component.ts
+		  ngOnInit() {
+  		}
+  		doLogin() {
+    			console.log(this.username);
+    			console.log(this.password);
+		}
+
+-----------------------
+*ngIf="expression"
+	isError = false;
+	<div class="error active" *ngIf="isError">	
+	if (this.username === 'admin' && this.password === 'admin') {
+      		//goto main pages
+    	} else {
+      		this.isError = true;
+    	}	
+-----------------------------
+disable button
+	<button type="submit" [disabled]="!typeId || !username || !password"   (click)="doLogin()" class="btn btn-primary">NEXT</button>
+-----------------------------
+ng g m admin --routing --spec false
+ng g c admin/layout --spec false -is
+ng g c admin/home --spec false -is
+-----------------------------
+routing การทำ routing Module
+	admin-routing.module.ts
+		const routes: Routes = [
+  		{ 
+    		    path:'admin',   
+		    component: LayoutComponent,
+		    children:[
+		       {path:'',redirectTo: 'home', pathMatch: 'full'},			
+		       {path:'home', component: HomeComponent}
+		    ]
+		  }
+		];		
+
+	app.module.ts
+		เพิ่ม import adminmodule เข้าไป
+	login.component.ts
+		constructor(private router: Router) {
+  		}	
+		import { Router } from '../../../../node_modules/@angular/router';
+
+	 if (this.username === 'admin' && this.password === 'admin') {
+	     //goto main pages
+	      this.isError = false;
+	      this.router.navigateByUrl('admin');
+	} else {
+	      this.isError = true;
+    	}
+---------------------------------------------------------------------------------------
+const routes: Routes = [
+  {
+    path: 'staff',
+    component: LayoutComponent,
+    children: [
+      { path: '', redirectTo: 'main', pathMatch: 'full' },
+      { path: 'main', component: MainComponent }
+    ]
+  }
+];
+----------------------------------------------------------------------------------------
+การทำ routing ภายในโมดูล (Link ไปยังหน้าอื่น ๆ ภายในโมดูล)
+	routerLink="/staff/main"  <== ใน a link
+	<a href="javacript://" routerLink="/staff/request" routerLinkActive="active" class="nav-link nav-icon">
+        		<clr-icon shape="folder"></clr-icon>
+      	</a>
+----------------------------------------------------------------------------------------
+ng g c sheared/pageNotFound --spec false -is -it    
+	{ path: '**', component: PageNotFoundComponent }
+----------------------------------------------------------------------------------------
+token
+	-ใช้สำหรับตรวจสอบว่า user สามารถเข้าใช้งานหน้า web ต่าง ๆ ได้หรือไม่
+	- Authen   เก็บ token ไว้ใช้งาน เพื่อส่งไปยังหน้า service ต่าง expire หรือยัง
+	- https://jwt.io  สำหรับ decode token
+	- http://jwtbuilder.jamiekurtz.com  สำหรับ gen token
+	-SessionStorage   เก็บ storage ไว้ที่ browser เมื่อปิดจะหายไป
+	-LocalStorage      เก็บไว้ที่เครื่อง
+	
+	let token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1MzM1NjE1MjksImV4cCI6MTU2NTA5NzUyOSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImZ1bGxuYW1lIjoicGF0IHRhbmdrYXJrdW53aWdpZCIsImVtYWlsIjoiY2NiYmFhQGdtYWlsLmNvbSIsInVzZXJUeXBlIjoic3RhZmYifQ.EbsqsLVZI7dWh2YZhTILhldrEF1AoK076Y0hFWmiK7w';
+      	sessionStorage.setItem('token', token);   <==เก็บ sesstionstorage
+	
+	สร้าง service ใหม่
+		ng g s shared/authGuard --spec false
+
+	staff.module.ts  <== โมดูลที่ต้องการเรียกใช้ service AuthGard
+
+	declarations: [LayoutComponent, MainComponent, RequestComponent],
+  	  providers:[AuthGuardService]
+	
+	staff-routing.module.ts
+	
+const routes: Routes = [
+  {
+    path: 'staff',
+    canActivate: [AuthGuardService],
+    component: LayoutComponent,
+    children: [
+      { path: '', redirectTo: 'main', pathMatch: 'full' },
+      { path: 'main', component: MainComponent },
+      { path: 'request', component: RequestComponent },
+      { path: '**', component: PageNotFoundComponent }
+    ]
+  }
+];
+
+auth-guard.service.ts
+===> ตรวจสอบว่า มี token หรือไม่ ก่อน 
+export class AuthGuardService {
+
+  constructor() { }
+
+  canActivate() {
+    let token = sessionStorage.getItem('token');
+    if (token) return true;
+
+    return false;
+  }
+
+}
+
+
+
+
+----------------------------------------------------------------------------------------
