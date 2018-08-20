@@ -1,17 +1,30 @@
 import { Injectable } from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { Router } from '../../../node_modules/@angular/router';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuardService {
 
-  constructor() { }
+  jwtHelper: JwtHelperService = new JwtHelperService();
+
+  constructor(private router: Router) { }
 
   canActivate() {
     let token = sessionStorage.getItem('token');
-    if (token) return true;
+    if (token) {
+      if (this.jwtHelper.isTokenExpired(token)) {
+        this.router.navigateByUrl('/login');
+      } else {
+        return true;
+      }
+    } else {
+      this.router.navigateByUrl('/login');
+      return false;
+    }
 
-    return false;
   }
 
 }

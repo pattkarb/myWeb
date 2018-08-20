@@ -195,6 +195,11 @@ const routes: Routes = [
   }
 ];
 
+------------------------------------------------------------
+https://jwt.io
+let token ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...';
+ sessionStorage.setItem('token', token);
+---------------------------------------------------------
 auth-guard.service.ts
 ===> ตรวจสอบว่า มี token หรือไม่ ก่อน 
 export class AuthGuardService {
@@ -202,15 +207,34 @@ export class AuthGuardService {
   constructor() { }
 
   canActivate() {
-    let token = sessionStorage.getItem('token');
+    let token = sessionStorage.getItem('token'); <==เอา token มาใช้
     if (token) return true;
-
     return false;
   }
-
 }
+------------
+ลง โมดูลที่ใช้อ่าน token
+    @auth0/angular-jwt	
+npm i @auth0/angular-jwt -S
 
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { Route } from '../../../node_modules/@angular/compiler/src/core';
 
+ jwtHelper: JwtHelperService = new JwtHelperService();
+
+  constructor(private router: Route) { }
+
+  canActivate() {
+    let token = sessionStorage.getItem('token');
+    if (token) {
+      if(this.jwtHelper.isTokenExpired(token)) {
+        this.router.navigatgeByUrl('/login');
+      } else{
+        return true;
+      }
+    }
+    return false;
+  }
 
 
 ----------------------------------------------------------------------------------------

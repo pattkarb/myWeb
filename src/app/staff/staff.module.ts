@@ -15,6 +15,6 @@ import { AuthGuardService } from '../shared/auth-guard.service';
     StaffRoutingModule
   ],
   declarations: [LayoutComponent, MainComponent, RequestComponent],
-  providers:[AuthGuardService]
+  providers: [AuthGuardService]
 })
 export class StaffModule { }

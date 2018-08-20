@@ -26,15 +26,13 @@ export class LoginComponent implements OnInit {
   }
 
   doLogin() {
-    //console.log(this.username);
-    //console.log(this.password);
     console.log(this.typeId);
 
     if (this.username === 'admin' && this.password === 'admin') {
       this.isError = false;
 
-      let token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1MzM1NjE1MjksImV4cCI6MTU2NTA5NzUyOSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImZ1bGxuYW1lIjoicGF0IHRhbmdrYXJrdW53aWdpZCIsImVtYWlsIjoiY2NiYmFhQGdtYWlsLmNvbSIsInVzZXJUeXBlIjoic3RhZmYifQ.EbsqsLVZI7dWh2YZhTILhldrEF1AoK076Y0hFWmiK7w';
-      
+      let token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1MzQ3NzczNDEsImV4cCI6MTU2NjMxMzM0MSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImZ1bGxuYW1lIjoiUGF0IFRhbmd0cmFrdW53aWdpdCIsImVtYWlsIjoiY2NiYmFhQGdtYWlsLmNvbSIsInVzZXJUeXBlIjoic3RhZmYifQ.zTyNwLAEt-kGMypSN7SRFFrL2-swuBDjFtMbdTx_ejg';
+
       sessionStorage.setItem('token', token);
 
       if (this.typeId == 1) {
