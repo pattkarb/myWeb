@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '../../../../node_modules/@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-login',
@@ -7,6 +8,8 @@ import { Router } from '../../../../node_modules/@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+
+  jwtHelper: JwtHelperService = new JwtHelperService();
   username: string;
   password: string;
 
@@ -23,6 +26,24 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.checkToken();
+  }
+
+  checkToken() {
+    let token = sessionStorage.getItem('token');
+    if (token) {
+      if (!this.jwtHelper.isTokenExpired(token)) {
+        let decoded = this.jwtHelper.decodeToken(token);
+        console.log(decoded);
+        if (decoded.userType === 'staff') {
+          this.router.navigateByUrl('/staff');
+        } else if (decoded.userType === 'admin') {
+          this.router.navigateByUrl('/admin');
+        } else {
+          this.isError = true;
+        }
+      }
+    }
   }
 
   doLogin() {
